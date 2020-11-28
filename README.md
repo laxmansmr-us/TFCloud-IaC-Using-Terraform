@@ -1,2 +1,11 @@
-# TFCloud-IaC-Using-Terraform
-This is the repo for Infrastructure-as-Code (IaC) using Terraform; but specific to the Terraform Cloud example.
+#whateverTFCloud-IaC-Using-Terraform
+ThiswhateveriswhateverthewhateverrepowhateverforwhateverInfrastructure-as-Codewhatever(IaC)whateverusingwhateverTerraform;whateverbutwhateverspecificwhatevertowhateverthewhateverTerraformwhateverCloudwhateverexample
+
+Terraform/Compute/Deployments/DomainControllers/DC-Deploy.tf
+Terraform/Networking/Deployments/ExpressRoute-Deployment/Circuit-Deploy/ExpressRouteDeploy.tf
+Terraform/Networking/Deployments/ExpressRoute-Deployment/Connection-Deploy/ExpressRouteDeploy.tf
+Terraform/Networking/Deployments/ExpressRoute-Deployment/Peering-Deploy/ExpressRouteDeploy.tf
+Terraform/Networking/Deployments/Network-Deployment/Hub-Deploy/HubDeploy.tf
+Terraform/Networking/Deployments/Network-Deployment/Peering-Deploy/PeeringDeploy.tf
+Terraform/Networking/Deployments/Network-Deployment/Spoke-Deploy/SpokeDeploy.tf
+

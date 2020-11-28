@@ -15,11 +15,11 @@ terraform {
   # Backend for configuring remote state files to use Terraform Cloud (TFC)
   backend "remote" {
     # The name of your Terraform Cloud organization.
-    organization = "AdinErmie"
+    organization = "vystmo-inc"
 
     # The name of the Terraform Cloud workspace to store Terraform state files in
     workspaces {
-        name = "TFCloud-IaC-Using-Terraform--ExpressRouteConnectionDeploy"
+        name = "TFCloud-IaC-tfm-ExpressRouteConnectionDeploy"
     }
   }
 }

@@ -15,18 +15,19 @@ terraform {
   # Backend for configuring remote state files to use Terraform Cloud (TFC)
   backend "remote" {
     # The name of your Terraform Cloud organization.
-    organization = "AdinErmie"
+    organization = "vystmo-inc"
 
     # The name of the Terraform Cloud workspace to store Terraform state files in
     workspaces {
-        name = "TFCloud-IaC-Using-Terraform--ExpressRouteCircuitDeploy"
+        name = "TFCloud-IaC-tfm-ExpressRouteCircuitDeploy"
     }
   }
 }
 
 provider "azurerm" {
   features {}
-  #(Optional) The Subscription ID which should be used. This can also be sourced from the ARM_SUBSCRIPTION_ID Environment Variable.
+/**
+#(Optional) The Subscription ID which should be used. This can also be sourced from the ARM_SUBSCRIPTION_ID Environment Variable.
   subscription_id = var.subscription_id
   #(Optional) The Client ID which should be used. This can also be sourced from the ARM_CLIENT_ID Environment Variable.
   client_id       = var.client_id
@@ -34,7 +35,8 @@ provider "azurerm" {
   #(Optional) The Tenant ID which should be used. This can also be sourced from the ARM_TENANT_ID Environment Variable.
   tenant_id       = var.tenant_id
   #(Optional) The Cloud Environment which should be used. Possible values are public, usgovernment, german and china. Defaults to public. This can also be sourced from the ARM_ENVIRONMENT environment variable.
-  environment = "public"
+**/
+environment = "public"
 }
 
 module "ER-Circuit" {

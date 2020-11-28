@@ -1,0 +1,28 @@
+---
+name: Checkov-Analysis
+on:
+  push:
+    branches:
+      - feature
+jobs:
+  checkov-job:
+    runs-on: ubuntu-latest
+    name: Checkov-action
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+       
+      - name: Run Checkov Action
+        id: checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: /
+          skip_check: CKV_AWS_1 # optional: skip a specific check_id
+          quiet: true # optional: display only failed checks
+          framework: terraform # optional: run only on a specific infrastructure {cloudformation, terraform, kubernetes, all}
+
+      - name: Terraform Linter
+        uses: docker://github/super-linter:v2.1.1
+        env:
+          VALIDATE_ALL_CODEBASE: false
+          VALIDATE_TERRAFORM: true 

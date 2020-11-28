@@ -1,0 +1,112 @@
+name: CI
+on:
+  push:
+    branches:
+      - feature
+      - master  
+  pull_request:
+    branches:
+      - master
+    types: [opened, synchronize, reopened]
+    
+jobs:
+
+  terraform:
+    env: 
+       ARM_CLIENT_ID: ${{ secrets.az_client_id }}
+       ARM_CLIENT_SECRET: ${{ secrets.az_client_secret }}
+       ARM_SUBSCRIPTION_ID: ${{ secrets.az_subscription_id }}
+       ARM_TENANT_ID: ${{ secrets.az_tenant_id }}
+
+    runs-on: ubuntu-20.04
+
+    
+    steps:
+    - uses: actions/checkout@v2
+    - uses: hashicorp/setup-terraform@v1.2.1
+      with:
+        cli_config_credentials_hostname: app.terraform.io
+        cli_config_credentials_token: ${{ secrets.TF_TOKEN }}
+        terraform_version: 0.13.5
+    
+    - name: Terraform fmt
+      id: fmt
+      run: terraform fmt -recursive  
+
+    - name: Terraform Init
+      id: init
+      run: terraform init -no-color
+
+    - name: Terraform Validate
+      id: validate
+      run: terraform validate -no-color
+      
+    - name: Terraform Plan
+      id: plan
+      run: terraform plan -no-color
+
+    - name: remove old comment
+      id: remove_old_comment
+      uses: actions/github-script@0.9.0
+      if: github.event_name == 'pull_request'
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          opts = github.issues.listComments.endpoint.merge({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+            per_page: 100,
+          })
+          const comments = await github.paginate(opts)
+          for(const comment of comments) {
+            if (comment.user.login === "github-actions[bot]" && comment.body.startsWith("#### Terraform Format and Style")) {
+              github.issues.deleteComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: comment.id,
+              })
+            }
+          }
+
+    - name: show plan  
+      uses: actions/github-script@0.9.0
+      if: github.event_name == 'pull_request'
+      env:
+        PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const output = `#### Terraform Format and Style 🖌\`${{ matrix.env  }}\`
+          #### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+          #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+          #### Terraform Validation 🤖${{ steps.validate.outputs.stdout }}\`
+          #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+          
+          <details><summary>GitHub Plan</summary>
+
+          \`\`\`${process.env.PLAN}\`\`\`
+
+          </details>
+
+          *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Workflow: \`${{ github.workflow }}\`*`;
+
+          github.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: output
+          })
+            
+    - name: Check on failure
+      if: steps.plan.outcome == 'failure' || steps.fmt.outcome == 'failure' || steps.plan.outcome == 'failure'
+      run: |
+        echo ${{ steps.validate.outputs.status }} 
+        echo ${{ steps.fmt.outputs.status }}
+        echo ${{ steps.plan.outputs.status }}
+        exit 1
+
+    - name: Apply
+      if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+      run: terraform apply -auto-approve
+   

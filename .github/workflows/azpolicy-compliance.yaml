@@ -1,0 +1,27 @@
+name: az-polict-compilance-check
+on: 
+  push:
+    branches:
+      - feature
+  pull_request:
+    branches:
+      - master
+
+
+jobs:
+  assess-policy-compliance:    
+    runs-on: ubuntu-latest
+    steps:
+    # Azure Login       
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZURE_CREDENTIALS}} 
+    
+    - name: Check for resource compliance
+      uses: azure/policy-compliance-scan@v0
+      with:
+        scopes: |
+          /subscriptions/8534e7bb-0c6b-4358-9861-7e972e81a5ea/resourceGroups/rg-tcloud-azure            
+        #scopes-ignore: |
+        #  /subscriptions/8534e7bb-0c6b-4358-9861-7e972e81a5ea/resourceGroups/rg-tcloud-azure/providers/Microsoft.Web/sites/demoApp
